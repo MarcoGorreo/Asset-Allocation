@@ -159,3 +159,6 @@ list_tuples = list(zip(tickers,asset_class_original_percentage))
 tickers_dataframe = pd.DataFrame(list_tuples, columns=["Ticker", "% Allocation"])
 df_save_location = "Portfolios/" + allocation_name + ".xlsx"
 df_2_save_location = "Portfolios/" + allocation_name + " tickers.xlsx"
+
+portfolio_result.to_excel(df_save_location, sheet_name=allocation_name)
+tickers_dataframe.to_excel(df_2_save_location, sheet_name = 'tickers')
