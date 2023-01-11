@@ -129,8 +129,8 @@ for portfolio in range(len(portfolios)):
 
     # Get Tickers
 
-    #second_directory = "Portfolios/" + portfolios[portfolio] + " tickers" + ".xlsx"
-    #ticker_df = pd.read_excel(second_directory)
+    second_directory = "Portfolios/" + portfolios[portfolio] + " tickers" + ".xlsx"
+    ticker_df = pd.read_excel(second_directory)
 
 # Final Dataframe 
 
@@ -194,6 +194,11 @@ plt.xlabel('Date')
 plt.ylabel('Performance %')
 plt.legend()
 plt.rcParams["figure.figsize"] = (18,12)
+plt.show()
+
+# Pie Chart Plot
+
+plt.pie(ticker_df['% Allocation'],labels = ticker_df['Ticker'])
 plt.show()
 
 
