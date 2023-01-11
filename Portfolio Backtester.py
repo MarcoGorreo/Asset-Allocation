@@ -5,21 +5,19 @@ import yfinance as yf
 import datetime
 from datetime import datetime, timedelta, date
 from dateutil.relativedelta import relativedelta
-import matplotlib as mpl
-import matplotlib.pyplot as plt
 import numpy as np
 import math 
 
 # Settings
 
-initial_investment = 30000
-monthly_investment = 250
+initial_investment = 1000
+monthly_investment = 0
 rebalacing_frequency = 4
 
-allocation_name = "AW Vittorio 250M 4R"
+allocation_name = "All Weather Portfolio"
 
 tickers = ["IBGL.AS", "EM13.MI", "D3V3.DE", 'IBTS.AS',"IBCI.AS", "CSSPX.MI", "XCS6.DE",'SWDA.MI', "SGLD.L", "CRB.PA"]
-asset_class_original_percentage = [12.5,5,5,5,7.5,10,7.5,25,10,7.5]
+asset_class_original_percentage = [12.5,5,5,5,7.5,10,7.5,30,10,7.5]
 
 # Date
 
@@ -92,7 +90,11 @@ tickers_to_download = ""
 for ticker in tickers:
     tickers_to_download = tickers_to_download + ticker + " "
 
-df = yf.download(tickers = tickers_to_download, start= adjust_date(start_backtest), end= adjust_date(end_date), interval="1mo")
+if len(tickers) > 1:
+    df = yf.download(tickers = tickers_to_download, start= adjust_date(start_backtest), end= adjust_date(end_date), interval="1mo")
+else: 
+    ticker = str(tickers[0])
+    df = yf.download(ticker, start= adjust_date(start_backtest), end= adjust_date(end_date), interval="1mo")
 
 # Data Check
 
@@ -101,6 +103,16 @@ for i in range(len(df)):
         data_check = df['Adj Close'][ticker][df.index[i]]
         if math.isnan(data_check) == True:
             print(ticker, " datas are corrupted")
+            quit()
+
+total_portfolio_composition = 0
+
+for i in range(len(asset_class_original_percentage)):
+    total_portfolio_composition += asset_class_original_percentage[i]
+
+if total_portfolio_composition != 100:
+    print("Asset classes have not been weighted properly, please make sure they equal 100%")
+    quit()
 
 # Data Cleaning
 
@@ -143,12 +155,7 @@ for i in range(len(df)):
 list_tuples = list(zip(dates, portfolio_value_array))
 portfolio_result = pd.DataFrame(list_tuples, columns=['Date', 'Value'])
 
-plt.style.use('ggplot')
-fig, ax = plt.subplots()
-ax.grid(False)
-ax.plot(portfolio_result['Date'],portfolio_result['Value'], color='Green')
-ax.set_ylabel('Portfolio Value')
-ax.set_title("Portfolio Performance")
-
+list_tuples = list(zip(tickers,asset_class_original_percentage))
+tickers_dataframe = pd.DataFrame(list_tuples, columns=["Ticker", "% Allocation"])
 df_save_location = "Portfolios/" + allocation_name + ".xlsx"
-portfolio_result.to_excel(df_save_location, sheet_name=allocation_name) 
+df_2_save_location = "Portfolios/" + allocation_name + " tickers.xlsx"
